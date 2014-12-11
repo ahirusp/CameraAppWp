@@ -123,7 +123,7 @@ namespace CameraApp
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
-
+            
             // TODO: アプリケーションの状態を保存してバックグラウンドの動作があれば停止します
             deferral.Complete();
         }

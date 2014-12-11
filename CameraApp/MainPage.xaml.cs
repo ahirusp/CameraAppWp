@@ -5,6 +5,8 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Media.Capture;
+using Windows.Phone.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -22,11 +24,16 @@ namespace CameraApp
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private MediaCapture mediaCapture;
+        private bool isPreviewing = false;
+
         public MainPage()
         {
             this.InitializeComponent();
 
             this.NavigationCacheMode = NavigationCacheMode.Required;
+
+            HardwareButtons.BackPressed += HardwareButtons_BackPressed;
         }
 
         /// <summary>
@@ -34,15 +41,31 @@ namespace CameraApp
         /// </summary>
         /// <param name="e">このページにどのように到達したかを説明するイベント データ。
         /// このプロパティは、通常、ページを構成するために使用します。</param>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            // TODO: ここに表示するページを準備します。
+            mediaCapture = new MediaCapture();
 
-            // TODO: アプリケーションに複数のページが含まれている場合は、次のイベントの
-            // 登録によりハードウェアの戻るボタンを処理していることを確認してください:
-            // Windows.Phone.UI.Input.HardwareButtons.BackPressed イベント。
-            // 一部のテンプレートで指定された NavigationHelper を使用している場合は、
-            // このイベントが自動的に処理されます。
+            await mediaCapture.InitializeAsync();
+            captureElement.Source = mediaCapture;
+
+            await mediaCapture.StartPreviewAsync();
+            isPreviewing = true;
+        }
+
+        private void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)
+        {
+            releaseCapture();
+        }
+
+        private void releaseCapture()
+        {
+            if (isPreviewing)
+            {
+                captureElement.Source = null;
+                mediaCapture.StopPreviewAsync();
+                mediaCapture.Dispose();
+                isPreviewing = false;
+            }
         }
     }
 }

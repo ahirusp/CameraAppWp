@@ -9,6 +9,6 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-
+        <CaptureElement x:Name="captureElement"></CaptureElement>
     </Grid>
 </Page>
