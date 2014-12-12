@@ -6,7 +6,9 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Media.Capture;
+using Windows.Media.MediaProperties;
 using Windows.Phone.UI.Input;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -34,6 +36,7 @@ namespace CameraApp
             this.NavigationCacheMode = NavigationCacheMode.Required;
 
             HardwareButtons.BackPressed += HardwareButtons_BackPressed;
+            HardwareButtons.CameraPressed += HardwareButtons_CameraPressed;
         }
 
         /// <summary>
@@ -75,5 +78,13 @@ namespace CameraApp
             captureElement.Width = this.ActualHeight;
             captureElement.Height = this.ActualWidth;
         }
+
+        private async void HardwareButtons_CameraPressed(object sender, CameraEventArgs e)
+        {
+            StorageFolder cameraRollFolder = KnownFolders.CameraRoll;
+            StorageFile file = await cameraRollFolder.CreateFileAsync("test.jpg", CreationCollisionOption.ReplaceExisting);
+            await mediaCapture.CapturePhotoToStorageFileAsync(ImageEncodingProperties.CreateJpeg(), file);
+        }
+
     }
 }
