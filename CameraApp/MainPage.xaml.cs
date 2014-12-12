@@ -67,5 +67,13 @@ namespace CameraApp
                 isPreviewing = false;
             }
         }
+
+        private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            border.Width = this.ActualHeight;
+            border.Height = this.ActualHeight;
+            captureElement.Width = this.ActualHeight;
+            captureElement.Height = this.ActualWidth;
+        }
     }
 }

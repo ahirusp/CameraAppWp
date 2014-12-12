@@ -6,9 +6,15 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" SizeChanged="Page_SizeChanged">
 
     <Grid>
-        <CaptureElement x:Name="captureElement"></CaptureElement>
+        <Border x:Name="border" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <CaptureElement x:Name="captureElement" RenderTransformOrigin="0.5,0.5">
+                <CaptureElement.RenderTransform>
+                    <CompositeTransform Rotation="90"/>
+                </CaptureElement.RenderTransform>
+            </CaptureElement>
+        </Border>
     </Grid>
 </Page>
