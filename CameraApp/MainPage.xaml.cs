@@ -1,23 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Media.Capture;
 using Windows.Media.MediaProperties;
 using Windows.Phone.UI.Input;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-
-// 空白ページのアイテム テンプレートについては、http://go.microsoft.com/fwlink/?LinkId=391641 を参照してください
 
 namespace CameraApp
 {
@@ -35,6 +23,7 @@ namespace CameraApp
 
             this.NavigationCacheMode = NavigationCacheMode.Required;
 
+            //ハードウェアキーのイベント登録
             HardwareButtons.BackPressed += HardwareButtons_BackPressed;
             HardwareButtons.CameraPressed += HardwareButtons_CameraPressed;
         }
@@ -55,22 +44,35 @@ namespace CameraApp
             isPreviewing = true;
         }
 
+        /// <summary>
+        /// 戻るを押した時
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)
         {
             releaseCapture();
         }
 
-        private void releaseCapture()
+        /// <summary>
+        /// リソースを解放
+        /// </summary>
+        private async void releaseCapture()
         {
             if (isPreviewing)
             {
                 captureElement.Source = null;
-                mediaCapture.StopPreviewAsync();
+                await mediaCapture.StopPreviewAsync();
                 mediaCapture.Dispose();
                 isPreviewing = false;
             }
         }
 
+        /// <summary>
+        /// 画面サイズ（端末の向き）変更時
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             border.Width = this.ActualHeight;
@@ -79,6 +81,11 @@ namespace CameraApp
             captureElement.Height = this.ActualWidth;
         }
 
+        /// <summary>
+        /// シャッターボタンを押した時
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void HardwareButtons_CameraPressed(object sender, CameraEventArgs e)
         {
             StorageFolder cameraRollFolder = KnownFolders.CameraRoll;
