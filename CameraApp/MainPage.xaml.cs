@@ -96,6 +96,8 @@ namespace CameraApp
         {
             using (var randomAccessStream = new InMemoryRandomAccessStream())
             {
+                randomAccessStream.Seek(0);
+
                 await mediaCapture.CapturePhotoToStreamAsync(
                     ImageEncodingProperties.CreateJpeg(), randomAccessStream);
 
@@ -114,22 +116,14 @@ namespace CameraApp
         private async Task<WriteableBitmap> GetWriteableBitmap(InMemoryRandomAccessStream randomAccessStream)
         {
             var decoder = await BitmapDecoder.CreateAsync(randomAccessStream);
-            var transform = new BitmapTransform();
-            var pixelData = await decoder.GetPixelDataAsync(
-                decoder.BitmapPixelFormat, decoder.BitmapAlphaMode, transform,
-                ExifOrientationMode.RespectExifOrientation, ColorManagementMode.ColorManageToSRgb);
-            var pixels = pixelData.DetachPixelData();
-
-            var width = (int) decoder.OrientedPixelWidth;
-            var height = (int) decoder.OrientedPixelHeight;
+            var width = (int) decoder.PixelWidth;
+            var height = (int) decoder.PixelHeight;
 
             var bmp = new WriteableBitmap(width, height);
+            randomAccessStream.Seek(0);
 
-            using (var pixelStream = bmp.PixelBuffer.AsStream())
-            {
-                pixelStream.Seek(0, SeekOrigin.Begin);
-                pixelStream.Write(pixels, 0, pixels.Length);
-            }
+            await bmp.SetSourceAsync(randomAccessStream);
+
             return bmp;
         }
 
@@ -153,9 +147,9 @@ namespace CameraApp
                 pixels[i + 2] = avg;
             }
 
-            using (var pixelStreamstream = bmp.PixelBuffer.AsStream())
+            using (var pixelStream = bmp.PixelBuffer.AsStream())
             {
-                await pixelStreamstream.WriteAsync(pixels, 0, pixels.Length);
+                await pixelStream.WriteAsync(pixels, 0, pixels.Length);
             }
         }
 
